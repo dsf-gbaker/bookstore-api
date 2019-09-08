@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  build:
+    image: golang:1.12.9
+    working_dir: /go/src/restapi
+    environment:
+      - CGO_ENABLED=0
+      - GOBIN=/go/src/restapi/bin
+      - GOOS=linux
+      - GOARCH=amd64
+    command: /bin/bash -c "go get -d -v ./... && go install -v ./..."
+    volumes:
+      - "./:/go/src/restapi"
