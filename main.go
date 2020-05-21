@@ -16,6 +16,7 @@ func main() {
 	var store interfaces.ICrud
 	store = initBookStore()
 
+	// a dumb comment
 	r.HandleFunc("/api/books", store.GetAll).Methods("GET")
 	r.HandleFunc("/api/books/{id}", store.Get).Methods("GET")
 	r.HandleFunc("/api/books", store.Create).Methods("POST")
