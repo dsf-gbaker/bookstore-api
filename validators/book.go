@@ -4,7 +4,7 @@ import (
 	"restapi/dtos"
 )
 
-// IsValid validates a book
-func IsValid(book *dtos.Book) {
+// IsValidBook validates a book
+func IsValidBook(book *dtos.Book) {
 
 }
