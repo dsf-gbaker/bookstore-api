@@ -1,13 +1,17 @@
 version: "3.7"
 services:
-  build:
-    image: golang:1.12.9
-    working_dir: /go/src/restapi
+  rmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+    expose: 
+      - "5672"
+  api:
+    image: restapi:latest
     environment:
-      - CGO_ENABLED=0
-      - GOBIN=/go/src/restapi/bin
-      - GOOS=linux
-      - GOARCH=amd64
-    command: /bin/bash -c "go get -d -v ./... && go install -v ./..."
-    volumes:
-      - "./:/go/src/restapi"
+      - RMQ_URL=rmq:5672
+      - RMQ_UNAME=guest
+      - RMQ_PWD=guest
+      - RMQ_QNAME=TestQueue
+    ports:
+      - "8080:8080"

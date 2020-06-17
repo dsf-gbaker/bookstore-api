@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	perf "restapi/decorators"
 	myapi "restapi/handlers"
@@ -44,8 +45,29 @@ func initBookStore() *myapi.BookStore {
 }
 
 func initRMQ() (*amqp.Connection, *amqp.Channel) {
-	queue := "TestQueue"
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	queue := os.Getenv("RMQ_QNAME")
+	uname := os.Getenv("RMQ_UNAME")
+	pwd := os.Getenv("RMQ_PWD")
+	domain := os.Getenv("RMQ_URL")
+
+	if queue == "" {
+		panic("RMQ Queue Name is empty")
+	}
+
+	if uname == "" {
+		panic("RMQ Username is empty")
+	}
+
+	if pwd == "" {
+		panic("RMQ Pwd is empty")
+	}
+
+	if domain == "" {
+		panic("RMQ Domain is empty")
+	}
+
+	rmq := fmt.Sprintf("amqp://%s:%s@%s/", uname, pwd, domain)
+	conn, err := amqp.Dial(rmq)
 	if err != nil {
 		panic(err)
 	}

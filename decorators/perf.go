@@ -3,6 +3,7 @@ package decorators
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/streadway/amqp"
@@ -18,9 +19,10 @@ func RestPerf(restHandler RestFunc, rmqChannel *amqp.Channel) RestFunc {
 
 		defer func(t time.Time) {
 			elapsed := fmt.Sprintf("--- Time Elapsed: %fs ---\n", time.Since(t).Seconds())
+			queue := os.Getenv("RMQ_QNAME")
 			rmqChannel.Publish(
 				"",
-				"TestQueue",
+				queue,
 				false,
 				false,
 				amqp.Publishing{

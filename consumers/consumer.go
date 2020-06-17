@@ -2,14 +2,35 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/streadway/amqp"
 )
 
 func main() {
-	queue := "TestQueue"
+	queue := os.Getenv("RMQ_QNAME")
+	uname := os.Getenv("RMQ_UNAME")
+	pwd := os.Getenv("RMQ_PWD")
+	domain := os.Getenv("RMQ_URL")
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	if queue == "" {
+		panic("RMQ Queue Name is empty")
+	}
+
+	if uname == "" {
+		panic("RMQ Username is empty")
+	}
+
+	if pwd == "" {
+		panic("RMQ Pwd is empty")
+	}
+
+	if domain == "" {
+		panic("RMQ Domain is empty")
+	}
+
+	rmq := fmt.Sprintf("amqp://%s:%s@%s/", uname, pwd, domain)
+	conn, err := amqp.Dial(rmq)
 	if err != nil {
 		panic(err)
 	}
