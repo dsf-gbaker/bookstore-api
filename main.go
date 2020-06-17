@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	perf "restapi/decorators"
-	myapi "restapi/handlers"
-	"restapi/interfaces"
+	perf "github.com/beerskunk/restapi/decorators"
+	myapi "github.com/beerskunk/restapi/handlers"
+	"github.com/beerskunk/restapi/interfaces"
 
 	"github.com/gorilla/mux"
 	"github.com/streadway/amqp"

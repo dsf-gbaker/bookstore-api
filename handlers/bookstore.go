@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"restapi/dtos"
+	"github.com/beerskunk/restapi/dtos"
 )
 
 // BookStore should store and retrieve books
