@@ -1,14 +1,16 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 
-	"github.com/gorilla/mux"
-
 	"github.com/beerskunk/restapi/dtos"
+	"github.com/gorilla/mux"
 )
 
 // BookStore should store and retrieve books
@@ -35,6 +37,25 @@ func (store *BookStore) Init(books []dtos.Book) {
 
 // Get returns a book
 func (store *BookStore) Get(w http.ResponseWriter, r *http.Request) {
+
+	conn := fmt.Sprintf("%s:%s@tcp(db:3306)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PWD"), os.Getenv("DB_NAME"))
+	db, err := sql.Open("mysql", conn)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer db.Close()
+
+	res, err := db.Query("SELECT * FROM books INNER JOIN authors on books.fkAuthor=authors.id")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	res.Close()
+	fmt.Println("We got a list of books!")
+
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 

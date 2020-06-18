@@ -10,6 +10,7 @@ import (
 	myapi "github.com/beerskunk/restapi/handlers"
 	"github.com/beerskunk/restapi/interfaces"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/streadway/amqp"
 )

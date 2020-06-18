@@ -1,5 +1,18 @@
 version: "3.7"
 services:
+  db:
+    image: mysql:8.0.20
+    command: --init-file /data/application/create.sql
+    volumes:
+      - ./create.sql:/data/application/create.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=sampleuser
+      - MYSQL_PASSWORD=samplepwd
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
   rmq:
     image: rabbitmq:3-management
     ports:
@@ -13,5 +26,8 @@ services:
       - RMQ_UNAME=guest
       - RMQ_PWD=guest
       - RMQ_QNAME=TestQueue
+      - DB_USER=root
+      - DB_PWD=password
+      - DB_NAME=library
     ports:
       - "8080:8080"
