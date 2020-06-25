@@ -1,22 +1,20 @@
 version: "3.7"
 services:
   db:
-    image: mysql:8.0.20
-    command: --init-file /data/application/create.sql
+    image: postgres:12.3
     volumes:
-      - ./create.sql:/data/application/create.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=sampleuser
-      - MYSQL_PASSWORD=samplepwd
-    expose:
-      - "3306"
+      - POSTGRES_PASSWORD=p@ssw0rd
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=bookstore
     ports:
-      - "3306:3306"
+      - "5432"
   rmq:
     image: rabbitmq:3-management
     ports:
       - "15672:15672"
+      - "5672:5672"
     expose: 
       - "5672"
   api:
@@ -26,8 +24,10 @@ services:
       - RMQ_UNAME=guest
       - RMQ_PWD=guest
       - RMQ_QNAME=TestQueue
-      - DB_USER=root
-      - DB_PWD=password
-      - DB_NAME=library
+      - DB_USER=postgres
+      - DB_PWD=p@ssw0rd
+      - DB_NAME=bookstore
+      - DB_HOST=db
+      - DB_PORT=5432
     ports:
       - "8080:8080"

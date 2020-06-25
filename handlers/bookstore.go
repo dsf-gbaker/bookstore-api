@@ -29,45 +29,52 @@ func (store *BookStore) Init(books []dtos.Book) {
 		}
 
 	} else {
-		store.books = append(store.books, dtos.Book{ID: "1", Title: "Howdy", Author: &dtos.Author{FirstName: "George", LastName: "Washington"}})
-		store.books = append(store.books, dtos.Book{ID: "2", Title: "Beltway Bad Boy", Author: &dtos.Author{FirstName: "George", LastName: "Washington"}})
-		store.books = append(store.books, dtos.Book{ID: "3", Title: "Shazam", Author: &dtos.Author{FirstName: "Baby", LastName: "Jane"}})
+		store.books = append(store.books, dtos.Book{ID: "1", Title: "Howdy", Author: dtos.Author{FirstName: "George", LastName: "Washington"}})
+		store.books = append(store.books, dtos.Book{ID: "2", Title: "Beltway Bad Boy", Author: dtos.Author{FirstName: "George", LastName: "Washington"}})
+		store.books = append(store.books, dtos.Book{ID: "3", Title: "Shazam", Author: dtos.Author{FirstName: "Baby", LastName: "Jane"}})
 	}
 }
 
 // Get returns a book
 func (store *BookStore) Get(w http.ResponseWriter, r *http.Request) {
 
-	conn := fmt.Sprintf("%s:%s@tcp(db:3306)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PWD"), os.Getenv("DB_NAME"))
-	db, err := sql.Open("mysql", conn)
+	conn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PWD"),
+		os.Getenv("DB_NAME"))
 
+	params := mux.Vars(r)
+	id := params["id"]
+	book := dtos.Book{Author: dtos.Author{}}
+	if len(id) == 0 {
+		panic("404")
+	}
+
+	db, err := sql.Open("postgres", conn)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	defer db.Close()
 
-	res, err := db.Query("SELECT * FROM books INNER JOIN authors on books.fkAuthor=authors.id")
+	qry := fmt.Sprintf("SELECT books.id as id, books.title as title, authors.firstname as firstname, authors.lastname as lastname FROM books INNER JOIN authors on books.author_id=authors.id WHERE books.id=%s", id)
+	res, err := db.Query(qry)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	res.Close()
+	defer res.Close()
+
 	fmt.Println("We got a list of books!")
 
+	res.Next()
+	res.Scan(&book.ID, &book.Title, &book.Author.FirstName, &book.Author.LastName)
+
 	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-
-	for _, item := range store.books {
-
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
-	}
-
-	json.NewEncoder(w).Encode(&dtos.Book{})
+	json.NewEncoder(w).Encode(book)
 }
 
 // GetAll returns all the books

@@ -10,8 +10,8 @@ import (
 	myapi "github.com/beerskunk/restapi/handlers"
 	"github.com/beerskunk/restapi/interfaces"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/streadway/amqp"
 )
 
@@ -20,6 +20,7 @@ func main() {
 	r := mux.NewRouter()
 	var store interfaces.ICrud
 	store = initBookStore()
+
 	conn, ch := initRMQ()
 	if conn == nil || ch == nil {
 		panic("RMQ Connection failed...")
