@@ -18,7 +18,7 @@ import (
 func main() {
 
 	r := mux.NewRouter()
-	var store interfaces.ICrud
+	var store interfaces.IBookStore
 	store = initBookStore()
 
 	conn, ch := initRMQ()
@@ -42,7 +42,7 @@ func main() {
 func initBookStore() *myapi.BookStore {
 
 	store := myapi.BookStore{}
-	store.Init(nil)
+	store.Init()
 	return &store
 }
 
