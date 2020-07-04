@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	perf "github.com/beerskunk/restapi/decorators"
-	myapi "github.com/beerskunk/restapi/handlers"
-	"github.com/beerskunk/restapi/interfaces"
+	perf "github.com/beerskunk/restapi/src/decorators"
+	myapi "github.com/beerskunk/restapi/src/handlers"
+	"github.com/beerskunk/restapi/src/interfaces"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"

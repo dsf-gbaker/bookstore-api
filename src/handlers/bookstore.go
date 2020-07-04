@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/beerskunk/restapi/dtos"
+	"github.com/beerskunk/restapi/src/dtos"
 	"github.com/gorilla/mux"
 )
 

@@ -1,7 +1,7 @@
 package validators
 
 import (
-	"github.com/beerskunk/restapi/dtos"
+	"github.com/beerskunk/restapi/src/dtos"
 )
 
 // IsValidAuthor validates a author
