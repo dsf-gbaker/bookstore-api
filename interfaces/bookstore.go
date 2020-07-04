@@ -4,8 +4,9 @@ import (
 	"net/http"
 )
 
-// ICrud interface for CRUD operations on a RESTful resource
-type ICrud interface {
+// IBookStore interface for CRUD operations
+type IBookStore interface {
+	Init()
 	Get(w http.ResponseWriter, r *http.Request)
 	GetAll(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
