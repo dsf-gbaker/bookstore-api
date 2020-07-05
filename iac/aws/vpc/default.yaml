@@ -1,0 +1,129 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Creates a default VPC and security groups"
+Resources:
+  defaultVPC:
+    Type: AWS::EC2::VPC
+    DeletionPolicy: Delete
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: false
+      EnableDnsHostnames: false
+      InstanceTenancy: default
+      Tags:
+      - Key: owner
+        Value: beerskunk
+  subnet1a:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    Properties:
+      VpcId:
+        Ref: defaultVPC
+      CidrBlock: 10.0.0.0/20
+      Tags:
+        - Key: owner
+          Value: beerskunk
+  subnet1b:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    Properties:
+      VpcId:
+        Ref: defaultVPC
+      CidrBlock: 10.0.16.0/20
+      Tags:
+        - Key: owner
+          Value: beerskunk
+  dbSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    DeletionPolicy: Delete
+    Properties:
+      DBSubnetGroupDescription: "DB Subnet Group" #required
+      DBSubnetGroupName: "BookStoreDBSubnetGroup"
+      SubnetIds: #required
+        - !Ref subnet1a
+        - !Ref subnet1b
+      Tags:
+        - Key: owner
+          Value: beerskunk
+  sgDatabase:
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: Delete
+    Properties:
+      GroupDescription: "Controls access to and from a DB hosted on EC2"
+      GroupName: "Database Security Group"
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: owner
+          Value: beerskunk
+      VpcId:
+        Ref: defaultVPC
+  sgMicroservice:
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: Delete
+    Properties:
+      GroupDescription: "Controls access to and from a Microservice" #required
+      GroupName: "Microservice Security Group"
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: owner
+          Value: beerskunk
+      VpcId:
+        Ref: defaultVPC
+  sgWebsite:
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: Delete
+    Properties:
+      GroupDescription: "Controls access to and from a website hosted on EC2" #required
+      GroupName: "Website Security Group"
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: owner
+          Value: beerskunk
+      VpcId:
+        Ref: defaultVPC
+Outputs:
+  DBSecurityGroup:
+    Description: "The security group to use for DB access"
+    Value: !GetAtt sgDatabase.GroupId
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSecurityGroup"
+  DBSubnetGroup:
+    Description: "The subnet group to assign to the DB"
+    Value: !Ref dbSubnetGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSubnetGroup"
+  
