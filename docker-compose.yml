@@ -18,7 +18,7 @@ services:
     expose: 
       - "5672"
   api:
-    image: restapi:latest
+    image: bookstoreapi:latest
     environment:
       - RMQ_URL=rmq:5672
       - RMQ_UNAME=guest

@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 	"github.com/streadway/amqp"
 )
 
@@ -36,7 +37,31 @@ func main() {
 	r.HandleFunc("/api/books/{id}", perf.RestPerf(store.Update, ch)).Methods("PUT")
 	r.HandleFunc("/api/books/{id}", perf.RestPerf(store.Delete, ch)).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	corsOpts := cors.New(cors.Options{
+		AllowedOrigins: []string{"*", "http://localhost:3000"},
+		AllowedHeaders: []string{
+			"Accept",
+			"Accept-Encoding",
+			"Accept-Language",
+			"Cache-Control",
+			"Connection",
+			"DNT",
+			"Host",
+			"Origin",
+			"Pragma",
+			"Referer",
+			"User-Agent",
+		},
+		AllowedMethods: []string{
+			"DELETE",
+			"GET",
+			"OPTIONS",
+			"POST",
+			"PUT",
+		},
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", corsOpts.Handler(r)))
 }
 
 func initBookStore() *myapi.BookStore {
