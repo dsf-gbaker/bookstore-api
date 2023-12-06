@@ -1,4 +1,4 @@
-FROM golang:1.14 AS builder
+FROM golang:1.16.5 AS builder
 WORKDIR /go/src/restapi
 COPY . .
 RUN go get -d -v ./...

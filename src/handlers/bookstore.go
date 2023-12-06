@@ -90,8 +90,16 @@ func (store *BookStore) GetAll(w http.ResponseWriter, r *http.Request) {
 
 // Create creates a new book
 func (store *BookStore) Create(w http.ResponseWriter, r *http.Request) {
+	var book dtos.Book
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	err := dec.Decode(&book)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(nil)
+	json.NewEncoder(w).Encode(book)
 }
 
 // Update updates an existing book
